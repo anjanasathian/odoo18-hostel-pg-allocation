@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Sequence for Hostel Room -->
     <record id="seq_hostel_room" model="ir.sequence">
         <field name="name">Hostel Room Code</field>
         <field name="code">hostel.room</field>
         <field name="prefix">ROOM</field>
         <field name="padding">4</field>
     </record>
+    <!-- Sequence for Hostel Bed -->
+    <record id="seq_hostel_bed" model="ir.sequence">
+        <field name="name">Hostel Bed Code</field>
+        <field name="code">hostel.bed</field>
+        <field name="prefix">BED</field>
+        <field name="padding">4</field>
+    </record>
+    
 </odoo>

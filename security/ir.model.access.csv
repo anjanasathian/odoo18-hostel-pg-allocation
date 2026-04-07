@@ -7,3 +7,7 @@ access_hostel_room_internal,hostel.room internal,model_hostel_room,base.group_us
 access_hostel_room_user,hostel.room user,model_hostel_room,hostel_allocation.group_hostel_user,1,0,0,0
 access_hostel_room_manager,hostel.room manager,model_hostel_room,hostel_allocation.group_hostel_manager,1,1,1,0
 access_hostel_room_admin,hostel.room admin,model_hostel_room,hostel_allocation.group_hostel_admin,1,1,1,1
+access_hostel_bed_internal,hostel.bed internal,model_hostel_bed,base.group_user,1,1,1,0
+access_hostel_bed_user,hostel.bed user,model_hostel_bed,hostel_allocation.group_hostel_user,1,0,0,0
+access_hostel_bed_manager,hostel.bed manager,model_hostel_bed,hostel_allocation.group_hostel_manager,1,1,1,0
+access_hostel_bed_admin,hostel.bed admin,model_hostel_bed,hostel_allocation.group_hostel_admin,1,1,1,1

@@ -19,31 +19,33 @@ class HostelRoom(models.Model):
     status = fields.Selection([
         ('available','Available'),
         ('full','Full')
-    ], default='available')
+    ], compute='_compute_status', store=True)
 
-@api.model_create_multi
-def create(self, vals_list):
-    for vals in vals_list:
-        if not vals.get('name') or vals.get('name') == '-':
-            vals['name'] = self.env['ir.sequence'].next_by_code('service.booking') or '-'
-    return super().create(vals_list)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('name') or vals.get('name') == '-':
+                vals['name'] = self.env['ir.sequence'].next_by_code('hostel.room') or '-'
+        return super().create(vals_list)
 
-@api.depends('bed_ids', 'bed_ids.status')
-def _compute_bed_count(self):
-    for rec in self:
-        rec.bed_count = len(rec.bed_ids)
-        rec.occupied_bed_count = len(rec.bed_ids.filtered(lambda b: b.status == 'occupied'))
-        rec.available_bed_count = len(rec.bed_ids.filtered(lambda b: b.status == 'available'))
+    @api.depends('bed_ids', 'bed_ids.status')
+    def _compute_bed_count(self):
+        for rec in self:
+            rec.bed_count = len(rec.bed_ids)
+            rec.occupied_bed_count = len(rec.bed_ids.filtered(lambda b: b.status == 'occupied'))
+            rec.available_bed_count = len(rec.bed_ids.filtered(lambda b: b.status == 'available'))
+            rec.full_bed_count = rec.occupied_bed_count
 
-@api.depends('bed_ids', 'bed_ids.status', 'capacity')
-def _compute_status(self):
-    for rec in self:
-        if rec.capacity > 0 and rec.occupied_bed_count >= rec.capacity:
-            rec.status = 'full'
-        else:
-            rec.status = 'available'
-@api.constrains('capacity')
-def _check_capacity_positive(self):
-    for rec in self:
-        if rec.capacity <= 0:
-            raise ValidationError('Room capacity must be greater than 0.')
+    @api.depends('bed_ids', 'bed_ids.status', 'capacity')
+    def _compute_status(self):
+        for rec in self:
+            if rec.capacity > 0 and rec.occupied_bed_count >= rec.capacity:
+                rec.status = 'full'
+            else:
+                rec.status = 'available'
+
+    @api.constrains('capacity')
+    def _check_capacity_positive(self):
+        for rec in self:
+            if rec.capacity <= 0:
+                raise ValidationError('Room capacity must be greater than 0.')

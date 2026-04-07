@@ -21,7 +21,15 @@
         id="menu_room"
         name="Rooms"
         parent="menu_hostel_allocation_root"
-        action="action_room"
-        sequence="2"/>          
+        action="action_hostel_room"
+        sequence="2"/>  
+
+    <!-- BED MENU -->   
+    <menuitem
+        id="menu_bed"
+        name="Beds"
+        parent="menu_hostel_allocation_root"
+        action="hostel_bed_action"
+        sequence="3"/>          
        
 </odoo>

@@ -46,8 +46,9 @@
                         <page string="Beds">
                             <field name="bed_ids">
                                 <list editable="bottom">
-                                    <field name="bed_number"/>
+                                    <field name="name" readonly="1"/>
                                     <field name="status"/>
+                                    <field name="tenant_id"/>
                                 </list>
                             </field>
                         </page>
