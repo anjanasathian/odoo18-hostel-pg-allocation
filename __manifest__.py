@@ -20,6 +20,7 @@
         'security/security.xml',
         'security/ir.model.access.csv',
         'views/hostel_views.xml',
+        'views/room_views.xml',
         'views/menu_views.xml',
     ],
     

@@ -15,5 +15,13 @@
         parent="menu_hostel_allocation_root"
         action="action_hostel"
         sequence="1"/>          
+    
+    <!-- ROOM MENU -->   
+    <menuitem
+        id="menu_room"
+        name="Rooms"
+        parent="menu_hostel_allocation_root"
+        action="action_room"
+        sequence="2"/>          
        
 </odoo>
