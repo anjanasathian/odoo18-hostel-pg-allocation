@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_hostel_room" model="ir.sequence">
+        <field name="name">Hostel Room Code</field>
+        <field name="code">hostel.room</field>
+        <field name="prefix">ROOM</field>
+        <field name="padding">4</field>
+    </record>
+</odoo>

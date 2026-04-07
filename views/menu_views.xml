@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ROOT APP MENU (NO ACTION HERE) -->
+    <menuitem
+        id="menu_hostel_allocation_root"
+        name="Hostel Allocation"
+        action="action_hostel"
+        sequence="30"/>
+
+    <!-- HOSTEL MENU -->   
+    <menuitem
+        id="menu_hostel"
+        name="Hostels"
+        parent="menu_hostel_allocation_root"
+        action="action_hostel"
+        sequence="1"/>          
+       
+</odoo>
