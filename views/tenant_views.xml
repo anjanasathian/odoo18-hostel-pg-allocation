@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tenant List View -->   
+    <record id="view_tenant_list" model="ir.ui.view">
+        <field name="name">hostel.tenant.list</field>
+        <field name="model">hostel.tenant</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="tenant_id"/>
+                <field name="room_id"/>
+                <field name="bed_id"/>
+                <field name="check_in_date"/>
+                <field name="check_out_date"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Tenant Form View -->
+    <record id="view_tenant_form" model="ir.ui.view">
+        <field name="name">hostel.tenant.form</field>
+        <field name="model">hostel.tenant</field>
+        <field name="arch" type="xml">
+            <form string="Tenant">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="tenant_id"/>
+                        <field name="phone"/>
+                        <field name="address"/>
+                    </group>
+                    <group>
+                        <field name="bed_id"/>
+                        <field name="room_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="check_in_date"/>
+                        <field name="check_out_date"/>
+                        <field name="status"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tenant Kanban View  -->
+    <record id="view_tenant_kanban" model="ir.ui.view">
+        <field name="name">hostel.tenant.kanban</field>
+        <field name="model">hostel.tenant</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="tenant_id"/>
+                <field name="room_id"/>
+                <field name="bed_id"/>
+                <field name="check_in_date"/>
+                <field name="check_out_date"/>
+                <field name="status"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card">
+                            <strong><field name="name"/></strong><br/>
+                            <span>Tenant ID: <field name="tenant_id"/></span><br/>
+                            <span>Room: <field name="room_id"/></span><br/>
+                            <span>Bed: <field name="bed_id"/></span><br/>
+                            <span>Check-in: <field name="check_in_date"/></span><br/>
+                            <span>Check-out: <field name="check_out_date"/></span><br/>
+                            <span>Status: <field name="status"/></span>
+                        </div>
+                    </t>
+                </templates>    
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action for Tenant -->
+    <record id="action_hostel_tenant" model="ir.actions.act_window">
+        <field name="name">Hostel Tenants</field>
+        <field name="res_model">hostel.tenant</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>   
+</odoo>

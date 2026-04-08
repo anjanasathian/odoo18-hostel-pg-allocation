@@ -11,3 +11,7 @@ access_hostel_bed_internal,hostel.bed internal,model_hostel_bed,base.group_user,
 access_hostel_bed_user,hostel.bed user,model_hostel_bed,hostel_allocation.group_hostel_user,1,0,0,0
 access_hostel_bed_manager,hostel.bed manager,model_hostel_bed,hostel_allocation.group_hostel_manager,1,1,1,0
 access_hostel_bed_admin,hostel.bed admin,model_hostel_bed,hostel_allocation.group_hostel_admin,1,1,1,1
+access_hostel_tenant_internal,hostel.tenant internal,model_hostel_tenant,base.group_user,1,1,1,0
+access_hostel_tenant_user,hostel.tenant user,model_hostel_tenant,hostel_allocation.group_hostel_user,1,0,0,0
+access_hostel_tenant_manager,hostel.tenant manager,model_hostel_tenant,hostel_allocation.group_hostel_manager,1,1,1,0
+access_hostel_tenant_admin,hostel.tenant admin,model_hostel_tenant,hostel_allocation.group_hostel_admin,1,1,1,1

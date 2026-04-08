@@ -14,8 +14,17 @@
         name="Hostels"
         parent="menu_hostel_allocation_root"
         action="action_hostel"
-        sequence="1"/>          
-    
+        sequence="1"/> 
+
+    <!-- SUB MENU ROOM IN HOSTEL  -->
+    <menuitem
+        id="menu_hostel_room"
+        name="Rooms"
+        parent="menu_hostel"
+        action="action_hostel_room"
+        sequence="1"/> 
+
+     
     <!-- ROOM MENU -->   
     <menuitem
         id="menu_room"
@@ -32,4 +41,12 @@
         action="hostel_bed_action"
         sequence="3"/>          
        
+    <!-- TENANT MENU -->   
+    <menuitem
+        id="menu_tenant"
+        name="Tenants"
+        parent="menu_hostel_allocation_root"
+        action="action_hostel_tenant"
+        sequence="4"/>
+
 </odoo>

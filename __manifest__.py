@@ -22,6 +22,7 @@
         'views/hostel_views.xml',
         'views/room_views.xml',
         'views/bed_views.xml',
+        'views/tenant_views.xml',
         'views/menu_views.xml',
     ],
     

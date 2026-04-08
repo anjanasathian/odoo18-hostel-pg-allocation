@@ -14,5 +14,13 @@
         <field name="prefix">BED</field>
         <field name="padding">4</field>
     </record>
-    
+
+    <!-- Sequence for Hostel Tenant -->
+    <record id="seq_hostel_tenant" model="ir.sequence">
+        <field name="name">Hostel Tenant Code</field>
+        <field name="code">hostel.tenant</field>
+        <field name="prefix">TENANT</field>
+        <field name="padding">4</field>
+    </record>
+
 </odoo>
