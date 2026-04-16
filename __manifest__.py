@@ -23,9 +23,10 @@
         'views/room_views.xml',
         'views/bed_views.xml',
         'views/tenant_views.xml',
+        'views/invoice_views.xml',
         'views/menu_views.xml',
     ],
-    
+
     'installable': True,
     'application': True,
 }

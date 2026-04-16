@@ -23,8 +23,7 @@
         parent="menu_hostel"
         action="action_hostel_room"
         sequence="1"/> 
-
-     
+ 
     <!-- ROOM MENU -->   
     <menuitem
         id="menu_room"
@@ -48,5 +47,13 @@
         parent="menu_hostel_allocation_root"
         action="action_hostel_tenant"
         sequence="4"/>
+    
+    <!-- INVOICE MENU -->
+    <menuitem
+        id="menu_invoice"
+        name="Invoices"     
+        parent="menu_hostel_allocation_root"
+        action="action_hostel_invoice"
+        sequence="5"/>  
 
 </odoo>

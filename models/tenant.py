@@ -18,9 +18,9 @@ class HoselTenant(models.Model):
         ('inactive', 'Inactive')
     ], default='active')    
 
-@api.model_create_multi
-def create(self, vals_list):
-    for vals in vals_list:
-        if not vals.get('name') or vals.get('name') == '-':
-            vals['name'] = self.env['ir.sequence'].next_by_code('hostel.tenant') or '-'
-    return super().create(vals_list)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('name') or vals.get('name') == '-':
+                vals['name'] = self.env['ir.sequence'].next_by_code('hostel.tenant') or '-'
+        return super().create(vals_list)

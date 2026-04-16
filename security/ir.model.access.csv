@@ -15,3 +15,7 @@ access_hostel_tenant_internal,hostel.tenant internal,model_hostel_tenant,base.gr
 access_hostel_tenant_user,hostel.tenant user,model_hostel_tenant,hostel_allocation.group_hostel_user,1,0,0,0
 access_hostel_tenant_manager,hostel.tenant manager,model_hostel_tenant,hostel_allocation.group_hostel_manager,1,1,1,0
 access_hostel_tenant_admin,hostel.tenant admin,model_hostel_tenant,hostel_allocation.group_hostel_admin,1,1,1,1
+access_hostel_invoice_internal,hostel.invoice internal,model_hostel_invoice,base.group_user,1,1,1,0
+access_hostel_invoice_user,hostel.invoice user,model_hostel_invoice,hostel_allocation.group_hostel_user,1,0,0,0
+access_hostel_invoice_manager,hostel.invoice manager,model_hostel_invoice,hostel_allocation.group_hostel_manager,1,1,1,0
+access_hostel_invoice_admin,hostel.invoice admin,model_hostel_invoice,hostel_allocation.group_hostel_admin,1,1,1,1

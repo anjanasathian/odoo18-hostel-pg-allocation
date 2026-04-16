@@ -10,13 +10,11 @@ class HostelBed(models.Model):
         ('available','Available'),
         ('occupied','Occupied')
     ], default='available')
-    tenant_id = fields.Many2one('hostel.tenant', string='Tenant')   
+    tenant_id = fields.Many2one('hostel.tenant', string='Tenant')
 
-
-                       
-@api.model_create_multi
-def create(self, vals_list):
-    for vals in vals_list:
-        if not vals.get('name') or vals.get('name') == '-':
-            vals['name'] = self.env['ir.sequence'].next_by_code('hostel.bed') or '-'
-    return super().create(vals_list)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('name') or vals.get('name') == '-':
+                vals['name'] = self.env['ir.sequence'].next_by_code('hostel.bed') or '-'
+        return super().create(vals_list)

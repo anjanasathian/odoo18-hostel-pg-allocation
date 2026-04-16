@@ -25,10 +25,13 @@
             <form string="Tenant">
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="tenant_id"/>
-                        <field name="phone"/>
-                        <field name="address"/>
+                        <group>
+                            <field name="name"/>
+                            <field name="tenant_id"/>
+                            <field name="phone"/>
+                            <field name="email"/>
+                            <field name="address"/>
+                        </group>
                     </group>
                     <group>
                         <field name="bed_id"/>
@@ -59,7 +62,7 @@
                 <field name="status"/>
 
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="oe_kanban_card">
                             <strong><field name="name"/></strong><br/>
                             <span>Tenant ID: <field name="tenant_id"/></span><br/>

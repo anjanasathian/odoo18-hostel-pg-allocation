@@ -23,4 +23,11 @@
         <field name="padding">4</field>
     </record>
 
+    <!-- Sequence for Hostel Invoice -->
+    <record id="seq_hostel_invoice" model="ir.sequence">
+        <field name="name">Hostel Invoice Code</field>
+        <field name="code">hostel.invoice</field>
+        <field name="prefix">INVOICE</field>
+        <field name="padding">4</field>
+    </record>
 </odoo>
