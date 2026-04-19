@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+    <record id="action_report_hostel_invoice" model="ir.actions.report">
+        <field name="name">Hostel Invoice</field>
+        <field name="model">hostel.invoice</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hostel_allocation.report_hostel_invoice_template</field>
+        <field name="report_file">hostel_allocation.report_hostel_invoice_template</field>
+        <field name="print_report_name">'Hostel Invoice - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_hostel_invoice"/>
+    </record>
+
+</odoo>

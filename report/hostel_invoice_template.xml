@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+    <template id="report_hostel_invoice_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 style="text-align: center;">Hostel Invoice</h2>
+
+                        <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+                            <tr>
+                                <td><strong>Invoice Number:</strong></td>
+                                <td><span t-field="o.invoice_number"/></td>
+                                <td><strong>Invoice Date:</strong></td>
+                                <td><span t-field="o.invoice_date"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td><span t-field="o.state"/></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+
+                        <h3 style="margin-top: 25px;">Tenant Details</h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td><strong>Tenant:</strong></td>
+                                <td><span t-field="o.name"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td><span t-field="o.email"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phone:</strong></td>
+                                <td><span t-field="o.phone"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Address:</strong></td>
+                                <td><span t-field="o.address"/></td>
+                            </tr>
+                        </table>
+
+                        <h3 style="margin-top: 25px;">Stay Details</h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td><strong>Hostel:</strong></td>
+                                <td>
+                                    <span t-if="o.hostel_id" t-field="o.hostel_id"/>
+                                </td>
+                                <td><strong>Room:</strong></td>
+                                <td>
+                                    <span t-if="o.room_id" t-field="o.room_id"/>
+                                </td>
+                                <td><strong>Bed:</strong></td>
+                                <td>
+                                    <span t-if="o.bed_id" t-field="o.bed_id"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Check-in Date:</strong></td>
+                                <td><span t-field="o.check_in_date"/></td>
+                                <td><strong>Check-out Date:</strong></td>
+                                <td><span t-field="o.check_out_date"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Days:</strong></td>
+                                <td><span t-field="o.total_days"/></td>
+                                <td><strong>Daily Rate:</strong></td>
+                                <td><span t-field="o.daily_rate"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Amount:</strong></td>
+                                <td><span t-field="o.amount_total"/></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+
+                        <div style="margin-top: 30px;">
+                            <strong>Notes:</strong>
+                            <p t-field="o.notes"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

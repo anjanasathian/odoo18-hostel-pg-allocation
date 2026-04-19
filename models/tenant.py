@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 class HoselTenant(models.Model):
     _name = 'hostel.tenant'
@@ -9,6 +10,7 @@ class HoselTenant(models.Model):
     email = fields.Char(string='Email')
     phone = fields.Char(string='Phone')
     address = fields.Text(string='Address')
+    hostel_id = fields.Many2one('hostel.hostel', string='Hostel', ondelete='set null')
     bed_id = fields.Many2one('hostel.bed', string='Bed', ondelete='set null')
     room_id = fields.Many2one('hostel.room', string='Room', related='bed_id.room_id', store=True, readonly=True)
     check_in_date = fields.Date(string='Check-in Date')
@@ -24,3 +26,17 @@ class HoselTenant(models.Model):
             if not vals.get('name') or vals.get('name') == '-':
                 vals['name'] = self.env['ir.sequence'].next_by_code('hostel.tenant') or '-'
         return super().create(vals_list)
+
+    @api.constrains('bed_id')
+    def _check_bed_availability(self):
+        for record in self:
+            if not record.bed_id:
+                continue
+
+            existing_tenant = self.search([
+                ('bed_id', '=', record.bed_id.id),
+                ('id', '!=', record.id),
+                ('status', '=', 'active'),
+            ], limit=1)
+            if existing_tenant:
+                raise ValidationError('The selected bed is already assigned to another active tenant.')

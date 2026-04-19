@@ -7,10 +7,12 @@ class HostelInvoice(models.Model):
 
     invoice_number = fields.Char(string='Invoice Number', copy=False, readonly=True, default='-')
     tenant_id = fields.Many2one('hostel.tenant', string='Tenant', required=True)
+    invoice_date = fields.Date(string='Invoice Date', default=fields.Date.context_today, required=True)
     name = fields.Char(string='Name', compute='_compute_name', store=True, readonly=False)
     email = fields.Char(string='Email', compute='_compute_from_tenant', store=True, readonly=False)
     phone = fields.Char(string='Phone', compute='_compute_from_tenant', store=True, readonly=False)
     address = fields.Text(string='Address', compute='_compute_from_tenant', store=True, readonly=False)
+    hostel_id = fields.Many2one('hostel.hostel', string='Hostel', compute='_compute_from_tenant', store=True, readonly=False)   
     room_id = fields.Many2one('hostel.room', string='Room', compute='_compute_from_tenant', store=True, readonly=False)
     bed_id = fields.Many2one('hostel.bed', string='Bed', compute='_compute_from_tenant', store=True, readonly=False)
     invoice_date = fields.Date(string='Invoice Date', default=fields.Date.context_today, required=True)
@@ -40,6 +42,7 @@ class HostelInvoice(models.Model):
             record.email = tenant.email if tenant else False
             record.phone = tenant.phone if tenant else False
             record.address = tenant.address if tenant else False
+            record.hostel_id = tenant.hostel_id if tenant else False
             record.room_id = tenant.room_id if tenant else False
             record.bed_id = tenant.bed_id if tenant else False
             record.check_in_date = tenant.check_in_date if tenant else False
@@ -91,6 +94,17 @@ class HostelInvoice(models.Model):
     @api.constrains('billing_from', 'check_in_date', 'billing_to', 'check_out_date')
     def _check_billing_with_stay(self):
         for record in self:
-            if record.billing_from and record.billing_to and record.check_in_date and record.check_out_date:
-                if record.billing_from < record.check_in_date or record.billing_to > record.check_out_date:
-                    raise ValidationError('Billing period must be within the tenant\'s stay period.')   
+            if not (record.billing_from and record.billing_to and record.check_in_date):
+                continue
+
+            # Enforce stay-window bounds only for closed stays (inactive tenant with checkout date).
+            if (
+                record.tenant_id
+                and record.tenant_id.status == 'inactive'
+                and record.check_out_date
+                and (
+                    record.billing_from < record.check_in_date
+                    or record.billing_to > record.check_out_date
+                )
+            ):
+                raise ValidationError('Billing period must be within the tenant check-in and check-out dates for inactive tenants.')

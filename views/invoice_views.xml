@@ -28,18 +28,24 @@
                     <button name="action_draft" string="Draft" type="object" class="btn-secondary" invisible="state == 'draft'"/>
                     <button name="action_paid" string="Paid" type="object" class="btn-primary" invisible="state == 'paid'"/>
                     <button name="action_cancel" string="Cancelled" type="object" class="btn-secondary" invisible="state == 'cancelled'"/>
+                    <button name="%(action_report_hostel_invoice)d"
+                            type="action"
+                            string="Print Report"
+                            class="btn-primary"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,paid,cancelled"/>
                 </header>
                 <sheet>
                     <group>
                         <field name="invoice_number" readonly="1"/>
                         <field name="tenant_id"/>
+                        <field name="invoice_date" readonly="1"/>
                         <field name="name" readonly="1"/>
                         <field name="email" readonly="1"/>
                         <field name="phone" readonly="1"/>
                         <field name="address" readonly="1"/>
                     </group>
                     <group>
+                        <field name="hostel_id" readonly="1"/>
                         <field name="room_id" readonly="1"/>
                         <field name="bed_id" readonly="1"/>
                         <field name="check_in_date" readonly="1"/>

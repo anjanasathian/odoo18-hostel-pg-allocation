@@ -34,6 +34,7 @@
                         </group>
                     </group>
                     <group>
+                        <field name="hostel_id"/>
                         <field name="bed_id"/>
                         <field name="room_id" readonly="1"/>
                     </group>

@@ -19,6 +19,8 @@
         'data/sequence.xml',
         'security/security.xml',
         'security/ir.model.access.csv',
+        'report/hostel_invoice_template.xml',
+        'report/hostel_invoice_report.xml',
         'views/hostel_views.xml',
         'views/room_views.xml',
         'views/bed_views.xml',
