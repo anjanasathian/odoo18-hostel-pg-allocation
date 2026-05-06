@@ -94,4 +94,20 @@
         action="action_hostel_category"
         sequence="1"/>
 
+    <!-- FACILITIES SUBMENU -->
+    <menuitem
+        id="menu_hostel_facility"
+        name="Facilities"
+        parent="menu_hostel_configuration"
+        action="action_hostel_facility"
+        sequence="2"/>
+
+    <!-- MESS PLANS SUBMENU -->
+    <menuitem
+        id="menu_hostel_mess"
+        name="Mess Plans"
+        parent="menu_hostel_configuration"
+        action="action_hostel_mess"
+        sequence="3"/>
+
 </odoo>

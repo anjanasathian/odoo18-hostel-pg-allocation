@@ -1,4 +1,6 @@
 from . import category
+from . import facility
+from . import mess
 from . import hostel
 from . import room
 from . import bed

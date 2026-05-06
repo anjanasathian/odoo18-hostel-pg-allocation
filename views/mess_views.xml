@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Hostel Mess List View -->
+    <record id="view_hostel_mess_list" model="ir.ui.view">
+        <field name="name">hostel.mess.list</field>
+        <field name="model">hostel.mess</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="hostel_id"/>
+                <field name="meal_type"/>
+                <field name="plan_type"/>
+                <field name="price"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="tenant_count" string="Tenants"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Hostel Mess Form View -->
+    <record id="view_hostel_mess_form" model="ir.ui.view">
+        <field name="name">hostel.mess.form</field>
+        <field name="model">hostel.mess</field>
+        <field name="arch" type="xml">
+            <form string="Mess Plan">
+                <sheet>
+                    <!-- Smart Button -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_tenants"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-users">
+                            <field name="tenant_count" widget="statinfo" string="Tenants"/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <group string="Plan Details">
+                            <field name="name"/>
+                            <field name="hostel_id"/>
+                            <field name="meal_type"/>
+                            <field name="plan_type"/>
+                            <field name="price"/>
+                        </group>
+                        <group string="Validity">
+                            <field name="active"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"
+                               placeholder="Describe the mess plan, timings, menu details, etc."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Hostel Mess Search View -->
+    <record id="view_hostel_mess_search" model="ir.ui.view">
+        <field name="name">hostel.mess.search</field>
+        <field name="model">hostel.mess</field>
+        <field name="arch" type="xml">
+            <search string="Search Mess Plans">
+                <field name="name"/>
+                <field name="hostel_id"/>
+                <separator/>
+                <filter string="Active" name="active" domain="[('active','=',True)]"/>
+                <filter string="Archived" name="archived" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter string="Vegetarian" name="veg" domain="[('meal_type','=','veg')]"/>
+                <filter string="Non-Vegetarian" name="non_veg" domain="[('meal_type','=','non_veg')]"/>
+                <filter string="Both" name="both" domain="[('meal_type','=','both')]"/>
+                <separator/>
+                <filter string="Daily Plans" name="daily" domain="[('plan_type','=','daily')]"/>
+                <filter string="Monthly Plans" name="monthly" domain="[('plan_type','=','monthly')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Hostel" name="group_hostel" context="{'group_by': 'hostel_id'}"/>
+                    <filter string="Meal Type" name="group_meal" context="{'group_by': 'meal_type'}"/>
+                    <filter string="Plan Type" name="group_plan" context="{'group_by': 'plan_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Hostel Mess Action -->
+    <record id="action_hostel_mess" model="ir.actions.act_window">
+        <field name="name">Mess Plans</field>
+        <field name="res_model">hostel.mess</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hostel_mess_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first mess plan!
+            </p>
+            <p>
+                Define Veg / Non-Veg meal plans with daily or monthly pricing
+                and assign them to tenants during allocation.
+            </p>
+        </field>
+    </record>
+
+</odoo>

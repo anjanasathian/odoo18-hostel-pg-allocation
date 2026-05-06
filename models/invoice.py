@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class HostelInvoice(models.Model):
@@ -22,6 +22,9 @@ class HostelInvoice(models.Model):
     billing_from = fields.Date(string='Billing From', required=True, store=True)
     billing_to = fields.Date(string='Billing To', required=True, store=True)
     daily_rate = fields.Float(string='Daily Rate', required=True)
+    mess_id = fields.Many2one('hostel.mess', string='Mess Plan',
+                              compute='_compute_from_tenant', store=True, readonly=False)
+    mess_charge = fields.Float(string='Mess Charge', compute='_compute_amount_total', store=True)
     amount_total = fields.Float(string='Total Amount', compute='_compute_amount_total', store=True)
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -47,6 +50,7 @@ class HostelInvoice(models.Model):
             record.bed_id = tenant.bed_id if tenant else False
             record.check_in_date = tenant.check_in_date if tenant else False
             record.check_out_date = tenant.check_out_date if tenant else False
+            record.mess_id = tenant.mess_id if tenant else False
 
     @api.depends('billing_from', 'billing_to')
     def _compute_total_days(self):
@@ -56,10 +60,19 @@ class HostelInvoice(models.Model):
             else:
                 record.total_days = 0
     
-    @api.depends('total_days', 'daily_rate')
+    @api.depends('total_days', 'daily_rate', 'mess_id', 'mess_id.price', 'mess_id.plan_type')
     def _compute_amount_total(self):
         for record in self:
-            record.amount_total = record.total_days * record.daily_rate 
+            accommodation = record.total_days * record.daily_rate
+            mess_charge = 0.0
+            if record.mess_id and record.mess_id.price:
+                if record.mess_id.plan_type == 'daily':
+                    mess_charge = record.total_days * record.mess_id.price
+                else:  # monthly
+                    months = (record.total_days / 30.0) if record.total_days else 0
+                    mess_charge = months * record.mess_id.price
+            record.mess_charge = mess_charge
+            record.amount_total = accommodation + mess_charge
 
     def action_draft(self):
         self.state = 'draft'
@@ -90,21 +103,3 @@ class HostelInvoice(models.Model):
             if record.billing_from and record.billing_to:
                 if record.billing_to < record.billing_from:
                     raise ValidationError('Billing end date cannot be before billing start date.')
-    
-    @api.constrains('billing_from', 'check_in_date', 'billing_to', 'check_out_date')
-    def _check_billing_with_stay(self):
-        for record in self:
-            if not (record.billing_from and record.billing_to and record.check_in_date):
-                continue
-
-            # Enforce stay-window bounds only for closed stays (inactive tenant with checkout date).
-            if (
-                record.tenant_id
-                and record.tenant_id.status == 'inactive'
-                and record.check_out_date
-                and (
-                    record.billing_from < record.check_in_date
-                    or record.billing_to > record.check_out_date
-                )
-            ):
-                raise ValidationError('Billing period must be within the tenant check-in and check-out dates for inactive tenants.')

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Hostel Facility List View -->
+    <record id="view_hostel_facility_list" model="ir.ui.view">
+        <field name="name">hostel.facility.list</field>
+        <field name="model">hostel.facility</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="facility_type"/>
+                <field name="description"/>
+                <field name="hostel_count" string="Hostels"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Hostel Facility Form View -->
+    <record id="view_hostel_facility_form" model="ir.ui.view">
+        <field name="name">hostel.facility.form</field>
+        <field name="model">hostel.facility</field>
+        <field name="arch" type="xml">
+            <form string="Hostel Facility">
+                <sheet>
+                    <!-- Smart Button -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_hostels"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-building">
+                            <field name="hostel_count" widget="statinfo" string="Hostels"/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <group string="General Information">
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="facility_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Settings">
+                            <field name="active"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description"
+                               nolabel="1"
+                               placeholder="Describe this facility (e.g., 24/7 WiFi available in all rooms)..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Hostel Facility Search View -->
+    <record id="view_hostel_facility_search" model="ir.ui.view">
+        <field name="name">hostel.facility.search</field>
+        <field name="model">hostel.facility</field>
+        <field name="arch" type="xml">
+            <search string="Search Facilities">
+                <field name="name" string="Facility Name"/>
+                <field name="code" string="Code"/>
+                <field name="facility_type" string="Type"/>
+                <separator/>
+                <filter string="Active" name="active" domain="[('active','=',True)]"/>
+                <filter string="Archived" name="archived" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter string="Basic" name="type_basic" domain="[('facility_type','=','basic')]"/>
+                <filter string="Premium" name="type_premium" domain="[('facility_type','=','premium')]"/>
+                <filter string="Recreational" name="type_recreational" domain="[('facility_type','=','recreational')]"/>
+                <filter string="Utilities" name="type_utilities" domain="[('facility_type','=','utilities')]"/>
+                <filter string="Security" name="type_security" domain="[('facility_type','=','security')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Facility Type" name="group_type" context="{'group_by': 'facility_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Hostel Facility Action -->
+    <record id="action_hostel_facility" model="ir.actions.act_window">
+        <field name="name">Hostel Facilities</field>
+        <field name="res_model">hostel.facility</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hostel_facility_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first hostel facility!
+            </p>
+            <p>
+                Define facilities like WiFi, Laundry, Gym, Parking, etc.
+                and assign them to hostels for easy discovery.
+            </p>
+        </field>
+    </record>
+
+</odoo>

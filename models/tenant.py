@@ -11,10 +11,32 @@ class HoselTenant(models.Model):
 
     name = fields.Char(string='Tenant Name', required=True)
     tenant_id = fields.Char(string='Tenant ID', required=True, copy=False, readonly=True, default='-')
+    gender = fields.Selection([
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other'),
+    ], string='Gender', tracking=True)
+    date_of_birth = fields.Date(string='Date of Birth')
+    age = fields.Integer(string='Age', compute='_compute_age', store=True)
     email = fields.Char(string='Email', tracking=True)
     phone = fields.Char(string='Phone')
+    emergency_contact = fields.Char(string='Emergency Contact')
+    emergency_phone = fields.Char(string='Emergency Phone')
     address = fields.Text(string='Address')
     hostel_id = fields.Many2one('hostel.hostel', string='Hostel', ondelete='set null', tracking=True)
+    category_id = fields.Many2one(
+        'hostel.category',
+        string='Hostel Category',
+        related='hostel_id.category_id',
+        store=True,
+        readonly=True,
+    )
+    hostel_facility_ids = fields.Many2many(
+        'hostel.facility',
+        string='Hostel Facilities',
+        related='hostel_id.facility_ids',
+        readonly=True,
+    )
     room_id = fields.Many2one(
         'hostel.room',
         string='Room',
@@ -28,6 +50,18 @@ class HoselTenant(models.Model):
         domain="[('room_id', '=', room_id), ('status', '=', 'available')]",
         tracking=True,
     )
+    mess_id = fields.Many2one(
+        'hostel.mess',
+        string='Mess Plan',
+        domain="[('hostel_id', '=', hostel_id), ('active', '=', True)]",
+        ondelete='set null',
+        tracking=True,
+    )
+    mess_price = fields.Float(
+        string='Mess Price',
+        related='mess_id.price',
+        readonly=True,
+    )
     check_in_date = fields.Date(string='Check-in Date')
     check_out_date = fields.Date(string='Check-out Date')
     status = fields.Selection([
@@ -35,6 +69,30 @@ class HoselTenant(models.Model):
         ('inactive', 'Inactive')
     ], default='active', tracking=True)
     invoice_id = fields.Many2one('hostel.invoice', string='Invoice')
+    invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
+
+    # -------------------------------------------------------------------------
+    # Compute Methods
+    # -------------------------------------------------------------------------
+
+    @api.depends('date_of_birth')
+    def _compute_age(self):
+        today = fields.Date.today()
+        for rec in self:
+            if rec.date_of_birth:
+                rec.age = today.year - rec.date_of_birth.year - (
+                    (today.month, today.day) < (rec.date_of_birth.month, rec.date_of_birth.day)
+                )
+            else:
+                rec.age = 0
+
+    def _compute_invoice_count(self):
+        for rec in self:
+            rec.invoice_count = 1 if rec.invoice_id else 0
+
+    # -------------------------------------------------------------------------
+    # Email
+    # -------------------------------------------------------------------------
 
     def _send_bed_assignment_email(self):
         template = self.env.ref('hostel_allocation.mail_template_tenant_bed_assignment', raise_if_not_found=False)
@@ -130,6 +188,7 @@ class HoselTenant(models.Model):
                     'billing_from': record.check_in_date or today,
                     'billing_to': record.check_out_date or checkout_date,
                     'daily_rate': 0.0,
+                    'mess_id': record.mess_id.id if record.mess_id else False,
                 })
                 record.invoice_id = invoice.id
 
@@ -166,6 +225,7 @@ class HoselTenant(models.Model):
                 'default_billing_from': self.check_in_date,
                 'default_billing_to': self.check_out_date or fields.Date.context_today(self),
                 'default_daily_rate': 0.0,
+                'default_mess_id': self.mess_id.id if self.mess_id else False,
             },
         }
 
@@ -176,6 +236,8 @@ class HoselTenant(models.Model):
                 record.room_id = False
             if record.bed_id and (not record.room_id or record.bed_id.room_id != record.room_id):
                 record.bed_id = False
+            if record.mess_id and record.mess_id.hostel_id != record.hostel_id:
+                record.mess_id = False
 
     @api.onchange('room_id')
     def _onchange_room_id(self):
@@ -215,5 +277,19 @@ class HoselTenant(models.Model):
         for record in self:
             if record.room_id and record.bed_id and record.bed_id.room_id != record.room_id:
                 raise ValidationError(_('The selected bed does not belong to the selected room.'))
+
+    @api.constrains('hostel_id', 'mess_id')
+    def _check_mess_matches_hostel(self):
+        for record in self:
+            if record.hostel_id and record.mess_id and record.mess_id.hostel_id and \
+                    record.mess_id.hostel_id != record.hostel_id:
+                raise ValidationError(_('The selected mess plan does not belong to the selected hostel.'))
+
+    @api.constrains('date_of_birth')
+    def _check_date_of_birth(self):
+        today = fields.Date.today()
+        for record in self:
+            if record.date_of_birth and record.date_of_birth > today:
+                raise ValidationError(_('Date of birth cannot be in the future.'))
             
     

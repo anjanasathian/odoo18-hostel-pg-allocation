@@ -8,6 +8,7 @@ class HostelHostel(models.Model):
     phone = fields.Char(string='Phone')
     total_floors = fields.Integer(string='Total Floors')
     category_id = fields.Many2one('hostel.category', string='Category', ondelete='set null')
+    facility_ids = fields.Many2many('hostel.facility', string='Facilities')
     room_ids = fields.One2many('hostel.room','hostel_id',string='Rooms')
     room_count = fields.Integer(string='Room Count', compute='_compute_room_count')
     full_room_count = fields.Integer(string='Full Room Count', compute='_compute_room_count')

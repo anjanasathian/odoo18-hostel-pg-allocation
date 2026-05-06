@@ -24,6 +24,8 @@
         'report/hostel_invoice_template.xml',
         'report/hostel_invoice_report.xml',
         'views/category_views.xml',
+        'views/facility_views.xml',
+        'views/mess_views.xml',
         'views/dashboard_views.xml',
         'views/hostel_views.xml',
         'views/room_views.xml',

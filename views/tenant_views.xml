@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Tenant List View -->   
+    <!-- Tenant List View -->
     <record id="view_tenant_list" model="ir.ui.view">
         <field name="name">hostel.tenant.list</field>
         <field name="model">hostel.tenant</field>
@@ -8,9 +8,12 @@
             <list>
                 <field name="name"/>
                 <field name="tenant_id"/>
+                <field name="gender"/>
                 <field name="hostel_id"/>
-                <field name="room_id" domain="[('hostel_id', '=', hostel_id), ('status', '=', 'available')]"/>
-                <field name="bed_id" domain="[('room_id', '=', room_id), ('status', '=', 'available')]"/>
+                <field name="category_id" optional="show"/>
+                <field name="room_id"/>
+                <field name="bed_id"/>
+                <field name="mess_id" optional="show"/>
                 <field name="check_in_date"/>
                 <field name="check_out_date"/>
                 <field name="status"/>
@@ -25,30 +28,72 @@
         <field name="arch" type="xml">
             <form string="Tenant">
                 <header>
-                    <button name="action_check_out" string="Check Out" type="object" class="btn-primary" invisible="status == 'inactive'"/>
+                    <button name="action_check_out" string="Check Out" type="object"
+                            class="btn-primary" invisible="status == 'inactive'"/>
+                    <field name="status" widget="statusbar" statusbar_visible="active,inactive"/>
                 </header>
                 <sheet>
+                    <!-- Smart Buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoice"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-text-o"
+                                invisible="invoice_count == 0">
+                            <field name="invoice_count" widget="statinfo" string="Invoice"/>
+                        </button>
+                    </div>
+
+                    <field name="invoice_id" invisible="1"/>
+
                     <group>
-                        <group>
+                        <!-- Personal Information -->
+                        <group string="Personal Information">
                             <field name="name"/>
-                            <field name="tenant_id"/>
+                            <field name="tenant_id" readonly="1"/>
+                            <field name="gender"/>
+                            <field name="date_of_birth"/>
+                            <field name="age" readonly="1"/>
                             <field name="phone"/>
                             <field name="email"/>
                             <field name="address"/>
-                            <field name="invoice_id" invisible="1"/>
                         </group>
-                        <group>
+
+                        <!-- Emergency Contact -->
+                        <group string="Emergency Contact">
+                            <field name="emergency_contact"/>
+                            <field name="emergency_phone"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <!-- Allocation Details -->
+                        <group string="Allocation Details">
                             <field name="hostel_id"/>
-                            <field name="room_id" domain="[('hostel_id', '=', hostel_id), ('status', '=', 'available')]"/>
-                            <field name="bed_id" domain="[('room_id', '=', room_id), ('status', '=', 'available')]"/>                            
+                            <field name="category_id" readonly="1"/>
+                            <field name="room_id"
+                                   domain="[('hostel_id', '=', hostel_id), ('status', '=', 'available')]"/>
+                            <field name="bed_id"
+                                   domain="[('room_id', '=', room_id), ('status', '=', 'available')]"/>
                             <field name="check_in_date"/>
                             <field name="check_out_date"/>
-                            <field name="status"/>
+                        </group>
+
+                        <!-- Mess & Facilities -->
+                        <group string="Mess &amp; Facilities">
+                            <field name="mess_id"
+                                   domain="[('hostel_id', '=', hostel_id), ('active', '=', True)]"/>
+                            <field name="mess_price" readonly="1"
+                                   invisible="not mess_id"/>
+                            <field name="hostel_facility_ids"
+                                   widget="many2many_tags"
+                                   readonly="1"
+                                   invisible="not hostel_id"/>
                         </group>
                     </group>
                 </sheet>
                 <chatter/>
-            </form> 
+            </form>
         </field>
     </record>
 
@@ -60,8 +105,10 @@
             <kanban>
                 <field name="name"/>
                 <field name="tenant_id"/>
+                <field name="gender"/>
                 <field name="room_id"/>
                 <field name="bed_id"/>
+                <field name="mess_id"/>
                 <field name="check_in_date"/>
                 <field name="check_out_date"/>
                 <field name="status"/>
@@ -71,14 +118,16 @@
                         <div class="oe_kanban_card">
                             <strong><field name="name"/></strong><br/>
                             <span>Tenant ID: <field name="tenant_id"/></span><br/>
+                            <span>Gender: <field name="gender"/></span><br/>
                             <span>Room: <field name="room_id"/></span><br/>
                             <span>Bed: <field name="bed_id"/></span><br/>
+                            <span>Mess: <field name="mess_id"/></span><br/>
                             <span>Check-in: <field name="check_in_date"/></span><br/>
                             <span>Check-out: <field name="check_out_date"/></span><br/>
                             <span>Status: <field name="status"/></span>
                         </div>
                     </t>
-                </templates>    
+                </templates>
             </kanban>
         </field>
     </record>
@@ -93,9 +142,23 @@
                 <field name="tenant_id"/>
                 <field name="hostel_id"/>
                 <field name="room_id"/>
+                <field name="mess_id" string="Mess Plan"/>
+                <field name="category_id" string="Category"/>
                 <separator/>
                 <filter string="Active" name="filter_active" domain="[('status', '=', 'active')]"/>
                 <filter string="Checked Out" name="filter_checked_out" domain="[('status', '=', 'inactive')]"/>
+                <separator/>
+                <filter string="Male" name="filter_male" domain="[('gender', '=', 'male')]"/>
+                <filter string="Female" name="filter_female" domain="[('gender', '=', 'female')]"/>
+                <separator/>
+                <filter string="With Mess Plan" name="filter_mess" domain="[('mess_id', '!=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Hostel" name="group_hostel" context="{'group_by': 'hostel_id'}"/>
+                    <filter string="Category" name="group_category" context="{'group_by': 'category_id'}"/>
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="Gender" name="group_gender" context="{'group_by': 'gender'}"/>
+                    <filter string="Mess Plan" name="group_mess" context="{'group_by': 'mess_id'}"/>
+                </group>
             </search>
         </field>
     </record>
