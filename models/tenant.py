@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class HoselTenant(models.Model):
@@ -11,8 +11,17 @@ class HoselTenant(models.Model):
     phone = fields.Char(string='Phone')
     address = fields.Text(string='Address')
     hostel_id = fields.Many2one('hostel.hostel', string='Hostel', ondelete='set null')
-    room_id = fields.Many2one('hostel.room', string='Room', domain=[('status', '=', 'available')])
-    bed_id = fields.Many2one('hostel.bed', string='Bed', ondelete='set null', domain=[('status', '=', 'available')])
+    room_id = fields.Many2one(
+        'hostel.room',
+        string='Room',
+        domain="[('hostel_id', '=', hostel_id), ('status', '=', 'available')]",
+    )
+    bed_id = fields.Many2one(
+        'hostel.bed',
+        string='Bed',
+        ondelete='set null',
+        domain="[('room_id', '=', room_id), ('status', '=', 'available')]",
+    )
     check_in_date = fields.Date(string='Check-in Date')
     check_out_date = fields.Date(string='Check-out Date')
     status = fields.Selection([
@@ -114,6 +123,20 @@ class HoselTenant(models.Model):
                 'default_daily_rate': 0.0,
             },
         }
+
+    @api.onchange('hostel_id')
+    def _onchange_hostel_id(self):
+        for record in self:
+            if record.room_id and record.room_id.hostel_id != record.hostel_id:
+                record.room_id = False
+            if record.bed_id and (not record.room_id or record.bed_id.room_id != record.room_id):
+                record.bed_id = False
+
+    @api.onchange('room_id')
+    def _onchange_room_id(self):
+        for record in self:
+            if record.bed_id and record.bed_id.room_id != record.room_id:
+                record.bed_id = False
     
     @api.constrains('check_in_date', 'check_out_date')
     def _check_checkout_after_checkin(self):
@@ -135,5 +158,17 @@ class HoselTenant(models.Model):
             ], limit=1)
             if existing_tenant:
                 raise ValidationError('The selected bed is already assigned to another active tenant.')
+
+    @api.constrains('hostel_id', 'room_id')
+    def _check_room_matches_hostel(self):
+        for record in self:
+            if record.hostel_id and record.room_id and record.room_id.hostel_id != record.hostel_id:
+                raise ValidationError(_('The selected room does not belong to the selected hostel.'))
+
+    @api.constrains('room_id', 'bed_id')
+    def _check_bed_matches_room(self):
+        for record in self:
+            if record.room_id and record.bed_id and record.bed_id.room_id != record.room_id:
+                raise ValidationError(_('The selected bed does not belong to the selected room.'))
             
     
