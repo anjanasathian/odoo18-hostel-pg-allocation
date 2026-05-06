@@ -1,3 +1,4 @@
+from . import category
 from . import hostel
 from . import room
 from . import bed

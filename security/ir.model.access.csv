@@ -22,3 +22,6 @@ access_hostel_invoice_manager,hostel.invoice manager,model_hostel_invoice,hostel
 access_hostel_invoice_admin,hostel.invoice admin,model_hostel_invoice,hostel_allocation.group_hostel_admin,1,1,1,1
 access_hostel_dashboard_internal,hostel.dashboard internal,model_hostel_dashboard,base.group_user,1,0,0,0
 access_hostel_dashboard_admin,hostel.dashboard admin,model_hostel_dashboard,base.group_user,1,0,0,0
+access_hostel_category_user,hostel.category user,model_hostel_category,hostel_allocation.group_hostel_user,1,0,0,0
+access_hostel_category_manager,hostel.category manager,model_hostel_category,hostel_allocation.group_hostel_manager,1,1,1,0
+access_hostel_category_admin,hostel.category admin,model_hostel_category,hostel_allocation.group_hostel_admin,1,1,1,1

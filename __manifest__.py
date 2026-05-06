@@ -23,6 +23,7 @@
         'security/ir.model.access.csv',
         'report/hostel_invoice_template.xml',
         'report/hostel_invoice_report.xml',
+        'views/category_views.xml',
         'views/dashboard_views.xml',
         'views/hostel_views.xml',
         'views/room_views.xml',

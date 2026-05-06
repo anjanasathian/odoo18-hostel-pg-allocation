@@ -79,4 +79,19 @@
         action="action_hostel_report"
         sequence="7"/>  
 
+    <!-- CONFIGURATION MENU -->
+    <menuitem
+        id="menu_hostel_configuration"
+        name="Configuration"
+        parent="menu_hostel_allocation_root"
+        sequence="8"/>
+
+    <!-- CATEGORIES SUBMENU -->
+    <menuitem
+        id="menu_hostel_category"
+        name="Categories"
+        parent="menu_hostel_configuration"
+        action="action_hostel_category"
+        sequence="1"/>
+
 </odoo>
