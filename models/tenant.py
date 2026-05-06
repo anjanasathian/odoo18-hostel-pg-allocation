@@ -1,34 +1,62 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class HoselTenant(models.Model):
     _name = 'hostel.tenant'
     _description = 'Hostel Tenant'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Tenant Name', required=True)
     tenant_id = fields.Char(string='Tenant ID', required=True, copy=False, readonly=True, default='-')
-    email = fields.Char(string='Email')
+    email = fields.Char(string='Email', tracking=True)
     phone = fields.Char(string='Phone')
     address = fields.Text(string='Address')
-    hostel_id = fields.Many2one('hostel.hostel', string='Hostel', ondelete='set null')
+    hostel_id = fields.Many2one('hostel.hostel', string='Hostel', ondelete='set null', tracking=True)
     room_id = fields.Many2one(
         'hostel.room',
         string='Room',
         domain="[('hostel_id', '=', hostel_id), ('status', '=', 'available')]",
+        tracking=True,
     )
     bed_id = fields.Many2one(
         'hostel.bed',
         string='Bed',
         ondelete='set null',
         domain="[('room_id', '=', room_id), ('status', '=', 'available')]",
+        tracking=True,
     )
     check_in_date = fields.Date(string='Check-in Date')
     check_out_date = fields.Date(string='Check-out Date')
     status = fields.Selection([
         ('active', 'Active'),
         ('inactive', 'Inactive')
-    ], default='active')    
+    ], default='active', tracking=True)
     invoice_id = fields.Many2one('hostel.invoice', string='Invoice')
+
+    def _send_bed_assignment_email(self):
+        template = self.env.ref('hostel_allocation.mail_template_tenant_bed_assignment', raise_if_not_found=False)
+        if not template:
+            _logger.warning('Bed assignment email template not found: hostel_allocation.mail_template_tenant_bed_assignment')
+            return
+
+        for record in self.filtered(lambda r: r.email and r.bed_id):
+            try:
+                template.sudo().send_mail(
+                    record.id,
+                    force_send=True,
+                    raise_exception=True,
+                    email_values={'email_to': record.email},
+                )
+                record.message_post(body=_('Bed assignment email sent to %s') % record.email)
+            except Exception as err:
+                _logger.exception('Failed to send bed assignment email for tenant %s', record.id)
+                record.message_post(
+                    body=_('Failed to send bed assignment email to %s. Error: %s') % (record.email, str(err))
+                )
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -41,25 +69,35 @@ class HoselTenant(models.Model):
             if tenant.bed_id:
                 tenant.bed_id.tenant_id = tenant.id
                 tenant.bed_id.status = 'occupied'
+                tenant._send_bed_assignment_email()
         
         return tenants
 
     def write(self, vals):
+        old_bed_by_tenant = {}
+        if 'bed_id' in vals:
+            old_bed_by_tenant = {record.id: record.bed_id for record in self}
+
         result = super().write(vals)
         
         # Update tenant_id in bed record if bed_id is changed
         if 'bed_id' in vals:
             for record in self:
+                old_bed = old_bed_by_tenant.get(record.id)
+
+                if old_bed and old_bed != record.bed_id:
+                    old_bed.tenant_id = False
+                    old_bed.status = 'available'
+
                 if record.bed_id:
                     record.bed_id.tenant_id = record.id
                     record.bed_id.status = 'occupied'
+                    if record.bed_id != old_bed:
+                        record._send_bed_assignment_email()
                 else:
-                    # If bed_id is set to null, also update the bed
-                    old_bed = self.env['hostel.bed'].search([('tenant_id', '=', record.id)], limit=1)
                     if old_bed:
                         old_bed.tenant_id = False
                         old_bed.status = 'available'
-                    pass
         
         return result
     
@@ -74,16 +112,23 @@ class HoselTenant(models.Model):
     def action_check_out(self):
         today = fields.Date.context_today(self)
         for record in self:
+            checkout_date = today
+            if record.check_in_date and checkout_date <= record.check_in_date:
+                if record.check_out_date and record.check_out_date > record.check_in_date:
+                    checkout_date = record.check_out_date
+                else:
+                    raise ValidationError(_('Cannot check out on or before the check-in date.'))
+
             record.write({
                 'status': 'inactive',
-                'check_out_date': today,
+                'check_out_date': checkout_date,
             })
 
             if not record.invoice_id:
                 invoice = self.env['hostel.invoice'].create({
                     'tenant_id': record.id,
                     'billing_from': record.check_in_date or today,
-                    'billing_to': record.check_out_date or today,
+                    'billing_to': record.check_out_date or checkout_date,
                     'daily_rate': 0.0,
                 })
                 record.invoice_id = invoice.id

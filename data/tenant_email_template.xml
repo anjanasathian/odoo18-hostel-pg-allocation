@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_tenant_bed_assignment" model="mail.template">
+        <field name="name">Tenant Bed Assignment Notification</field>
+        <field name="model_id" ref="model_hostel_tenant"/>
+        <field name="subject">Your bed has been assigned - {{ object.tenant_id or object.name }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or 'noreply@example.com') }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear <t t-out="object.name or 'Tenant'"/>,</p>
+                <p>Your hostel bed has been assigned successfully.</p>
+                <ul>
+                    <li><strong>Hostel:</strong> <t t-out="object.hostel_id.name or ''"/></li>
+                    <li><strong>Room:</strong> <t t-out="object.room_id.name or ''"/></li>
+                    <li><strong>Bed:</strong> <t t-out="object.bed_id.name or ''"/></li>
+                    <li><strong>Check-in Date:</strong> <t t-out="object.check_in_date or ''"/></li>
+                </ul>
+                <p>Please contact the hostel office for any changes.</p>
+                <p>Regards,<br/>Hostel Administration</p>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>
