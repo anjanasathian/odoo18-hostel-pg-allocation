@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-inherit="web.FormView" t-inherit-mode="extension">
+        <xpath expr="//t[@t-set-slot='layout-actions']" position="inside">
+            <t t-if="props.resModel === 'hostel.tenant' and this.showTenantInvoiceControlPanelButton">
+                <button type="button"
+                        class="btn btn-secondary"
+                        t-on-click.stop="onTenantInvoiceControlPanelClick">
+                    <i class="fa fa-file-text-o me-1"/>
+                    Invoice
+                </button>
+            </t>
+        </xpath>
+    </t>
+</templates>

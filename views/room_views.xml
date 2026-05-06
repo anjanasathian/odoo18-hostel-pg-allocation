@@ -94,10 +94,26 @@
         </field>
     </record>   
 
+    <!-- Room Search View -->
+    <record id="view_room_search" model="ir.ui.view">
+        <field name="name">hostel.room.search</field>
+        <field name="model">hostel.room</field>
+        <field name="arch" type="xml">
+            <search string="Search Rooms">
+                <field name="name"/>
+                <field name="hostel_id"/>
+                <separator/>
+                <filter string="Available" name="filter_available" domain="[('status', '=', 'available')]"/>
+                <filter string="Full" name="filter_full" domain="[('status', '=', 'full')]"/>
+            </search>
+        </field>
+    </record>
+
         <!-- Action -->
     <record id="action_hostel_room" model="ir.actions.act_window">
         <field name="name">Rooms</field>
         <field name="res_model">hostel.room</field>
         <field name="view_mode">list,form,kanban</field>
+        <field name="search_view_id" ref="view_room_search"/>
     </record>  
 </odoo>  

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hostel_dashboard_form" model="ir.ui.view">
+        <field name="name">hostel.dashboard.form</field>
+        <field name="model">hostel.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Hostel Dashboard" create="false" edit="false" delete="false">
+                <sheet>
+                    <div class="o_hostel_dashboard">
+                        <div class="o_hostel_dashboard_grid">
+                            <div class="o_hostel_metric_card">
+                                <div class="o_hostel_metric_label">Total Hostels</div>
+                                <div class="o_hostel_metric_value">
+                                    <field name="total_hostels" readonly="1" nolabel="1"/>
+                                </div>
+                            </div>
+
+                            <div class="o_hostel_metric_card">
+                                <div class="o_hostel_metric_label">Occupied Rooms</div>
+                                <div class="o_hostel_metric_value">
+                                    <field name="occupied_rooms" readonly="1" nolabel="1"/>
+                                </div>
+                            </div>
+
+                            <div class="o_hostel_metric_card">
+                                <div class="o_hostel_metric_label">Available Beds</div>
+                                <div class="o_hostel_metric_value">
+                                    <field name="available_beds" readonly="1" nolabel="1"/>
+                                </div>
+                            </div>
+
+                            <div class="o_hostel_metric_card">
+                                <div class="o_hostel_metric_label">Total Tenants</div>
+                                <div class="o_hostel_metric_value">
+                                    <field name="total_tenants" readonly="1" nolabel="1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hostel_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="res_model">hostel.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="res_id" ref="hostel_dashboard_main"/>
+    </record>
+</odoo>

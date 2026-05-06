@@ -5,8 +5,16 @@
     <menuitem
         id="menu_hostel_allocation_root"
         name="Hostel Allocation"
-        action="action_hostel"
+        action="action_hostel_dashboard"
         sequence="30"/>
+
+    <!-- DASHBOARD MENU -->
+    <menuitem
+        id="menu_hostel_dashboard"
+        name="Dashboard"
+        parent="menu_hostel_allocation_root"
+        action="action_hostel_dashboard"
+        sequence="1"/>
 
     <!-- HOSTEL MENU -->   
     <menuitem
@@ -14,15 +22,22 @@
         name="Hostels"
         parent="menu_hostel_allocation_root"
         action="action_hostel"
-        sequence="1"/> 
+        sequence="2"/> 
 
     <!-- SUB MENU ROOM IN HOSTEL  -->
+    <menuitem
+        id="menu_hostel_sub"
+        name="All Hostels"
+        parent="menu_hostel"
+        action="action_hostel"
+        sequence="1"/>
+
     <menuitem
         id="menu_hostel_room"
         name="Rooms"
         parent="menu_hostel"
         action="action_hostel_room"
-        sequence="1"/> 
+        sequence="2"/> 
  
     <!-- ROOM MENU -->   
     <menuitem
@@ -30,7 +45,7 @@
         name="Rooms"
         parent="menu_hostel_allocation_root"
         action="action_hostel_room"
-        sequence="2"/>  
+        sequence="3"/>  
 
     <!-- BED MENU -->   
     <menuitem
@@ -38,7 +53,7 @@
         name="Beds"
         parent="menu_hostel_allocation_root"
         action="hostel_bed_action"
-        sequence="3"/>          
+        sequence="4"/>          
        
     <!-- TENANT MENU -->   
     <menuitem
@@ -46,7 +61,7 @@
         name="Tenants"
         parent="menu_hostel_allocation_root"
         action="action_hostel_tenant"
-        sequence="4"/>
+        sequence="5"/>
     
     <!-- INVOICE MENU -->
     <menuitem
@@ -54,6 +69,14 @@
         name="Invoices"     
         parent="menu_hostel_allocation_root"
         action="action_hostel_invoice"
-        sequence="5"/>  
+        sequence="6"/>  
+
+    <!--REPORT MENU -->
+    <menuitem
+        id="menu_report"
+        name="Reports"     
+        parent="menu_hostel_allocation_root"
+        action="action_hostel_report"
+        sequence="7"/>  
 
 </odoo>

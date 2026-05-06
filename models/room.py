@@ -49,3 +49,13 @@ class HostelRoom(models.Model):
         for rec in self:
             if rec.capacity <= 0:
                 raise ValidationError('Room capacity must be greater than 0.')
+
+    @api.constrains('capacity', 'bed_ids')
+    def _check_bed_count_not_exceed_capacity(self):
+        for rec in self:
+            if rec.capacity and len(rec.bed_ids) > rec.capacity:
+                raise ValidationError(
+                    _('You cannot create more than %(capacity)s beds for room %(room)s.',
+                      capacity=rec.capacity,
+                      room=rec.name)
+                )

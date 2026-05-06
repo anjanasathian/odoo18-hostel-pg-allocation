@@ -23,6 +23,9 @@
         <field name="model">hostel.tenant</field>
         <field name="arch" type="xml">
             <form string="Tenant">
+                <header>
+                    <button name="action_check_out" string="Check Out" type="object" class="btn-primary" invisible="status == 'inactive'"/>
+                </header>
                 <sheet>
                     <group>
                         <group>
@@ -31,20 +34,19 @@
                             <field name="phone"/>
                             <field name="email"/>
                             <field name="address"/>
+                            <field name="invoice_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="hostel_id"/>
+                            <field name="room_id"/>
+                            <field name="bed_id"/>                            
+                            <field name="check_in_date"/>
+                            <field name="check_out_date"/>
+                            <field name="status"/>
                         </group>
                     </group>
-                    <group>
-                        <field name="hostel_id"/>
-                        <field name="bed_id"/>
-                        <field name="room_id" readonly="1"/>
-                    </group>
-                    <group>
-                        <field name="check_in_date"/>
-                        <field name="check_out_date"/>
-                        <field name="status"/>
-                    </group>
                 </sheet>
-            </form>
+            </form> 
         </field>
     </record>
 
@@ -79,10 +81,28 @@
         </field>
     </record>
 
+    <!-- Tenant Search View -->
+    <record id="view_tenant_search" model="ir.ui.view">
+        <field name="name">hostel.tenant.search</field>
+        <field name="model">hostel.tenant</field>
+        <field name="arch" type="xml">
+            <search string="Search Tenants">
+                <field name="name"/>
+                <field name="tenant_id"/>
+                <field name="hostel_id"/>
+                <field name="room_id"/>
+                <separator/>
+                <filter string="Active" name="filter_active" domain="[('status', '=', 'active')]"/>
+                <filter string="Checked Out" name="filter_checked_out" domain="[('status', '=', 'inactive')]"/>
+            </search>
+        </field>
+    </record>
+
     <!-- Action for Tenant -->
     <record id="action_hostel_tenant" model="ir.actions.act_window">
         <field name="name">Hostel Tenants</field>
         <field name="res_model">hostel.tenant</field>
         <field name="view_mode">list,form,kanban</field>
+        <field name="search_view_id" ref="view_tenant_search"/>
     </record>   
 </odoo>

@@ -17,10 +17,12 @@
     'depends': ['base'],
     'data': [
         'data/sequence.xml',
+        'data/dashboard_data.xml',
         'security/security.xml',
         'security/ir.model.access.csv',
         'report/hostel_invoice_template.xml',
         'report/hostel_invoice_report.xml',
+        'views/dashboard_views.xml',
         'views/hostel_views.xml',
         'views/room_views.xml',
         'views/bed_views.xml',
@@ -28,6 +30,13 @@
         'views/invoice_views.xml',
         'views/menu_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'hostel_allocation/static/src/scss/dashboard.scss',
+            'hostel_allocation/static/src/js/tenant_control_panel.js',
+            'hostel_allocation/static/src/xml/tenant_control_panel.xml',
+        ],
+    },
 
     'installable': True,
     'application': True,
