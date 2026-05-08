@@ -1,4 +1,11 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hostel_hostel_public,hostel.hostel public,model_hostel_hostel,base.group_public,1,0,0,0
+access_hostel_room_public,hostel.room public,model_hostel_room,base.group_public,1,0,0,0
+access_hostel_bed_public,hostel.bed public,model_hostel_bed,base.group_public,1,0,0,0
+access_hostel_mess_public,hostel.mess public,model_hostel_mess,base.group_public,1,0,0,0
+access_hostel_facility_public,hostel.facility public,model_hostel_facility,base.group_public,1,0,0,0
+access_hostel_category_public,hostel.category public,model_hostel_category,base.group_public,1,0,0,0
+access_hostel_tenant_public,hostel.tenant public,model_hostel_tenant,base.group_public,0,0,1,0
 access_hostel_hostel_internal,hostel.hostel internal,model_hostel_hostel,base.group_user,1,1,1,0
 access_hostel_hostel_user,hostel.hostel user,model_hostel_hostel,hostel_allocation.group_hostel_user,1,0,0,0
 access_hostel_hostel_manager,hostel.hostel manager,model_hostel_hostel,hostel_allocation.group_hostel_manager,1,1,1,0

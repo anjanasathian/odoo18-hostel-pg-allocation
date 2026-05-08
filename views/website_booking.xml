@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    <!-- ============================================================
+         Main Booking Page
+    ============================================================ -->
+    <template id="website_hostel_booking" name="Hostel Booking">
+        <t t-call="website.layout">
+            <div class="container py-5">
+                <div class="row mb-5">
+                    <div class="col-12 text-center">
+                        <h1 class="fw-bold text-primary mb-2">
+                            <i class="fa fa-bed me-2"/>Hostel Booking
+                        </h1>
+                        <p class="lead text-muted">Select your hostel and book your stay instantly</p>
+                    </div>
+                </div>
+
+                <!-- Error Messages -->
+                <t t-if="error">
+                    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                        <strong>Booking Error:</strong>
+                        <ul class="mb-0 mt-2">
+                            <t t-foreach="error.values()" t-as="msg">
+                                <li><t t-out="msg"/></li>
+                            </t>
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"/>
+                    </div>
+                </t>
+
+                <div class="row g-4">
+                    <!-- Available Hostels Sidebar -->
+                    <div class="col-lg-4">
+                        <h4 class="fw-bold mb-3">
+                            <i class="fa fa-home me-2 text-primary"/>Available Hostels
+                        </h4>
+                        <div class="list-group">
+                            <t t-foreach="hostels" t-as="hostel">
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="mb-0 fw-semibold">
+                                            <t t-out="hostel.name"/>
+                                        </h6>
+                                        <t t-if="hostel.category_id">
+                                            <span class="badge bg-info text-dark">
+                                                <t t-out="hostel.category_id.name"/>
+                                            </span>
+                                        </t>
+                                    </div>
+                                    <p class="text-muted small mb-2">
+                                        <i class="fa fa-phone me-1"/>
+                                        <t t-out="hostel.phone or 'N/A'"/>
+                                    </p>
+                                    <div class="d-flex gap-2 small">
+                                        <span class="text-success">
+                                            <i class="fa fa-check-circle me-1"/>
+                                            <t t-out="hostel.available_room_count"/> Available
+                                        </span>
+                                        <span class="text-secondary">
+                                            <t t-out="hostel.room_count"/> Rooms
+                                        </span>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                        <t t-if="not hostels">
+                            <div class="alert alert-warning">No hostels available</div>
+                        </t>
+                    </div>
+
+                    <!-- Booking Form -->
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-calendar-check me-2"/>Complete Your Booking
+                                </h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <form action="/hostel/booking/submit" method="POST" id="booking_form">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+
+                                    <!-- Personal Information -->
+                                    <fieldset class="mb-4">
+                                        <legend class="text-uppercase fw-bold text-muted mb-3">
+                                            <i class="fa fa-user me-2"/>Your Information
+                                        </legend>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label fw-semibold">
+                                                    Full Name <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" name="name" class="form-control"
+                                                       placeholder="John Doe"
+                                                       t-att-value="form_data and form_data.get('name') or ''"
+                                                       required="required"/>
+                                                <t t-if="error and error.get('name')">
+                                                    <small class="text-danger d-block mt-1">
+                                                        <t t-out="error['name']"/>
+                                                    </small>
+                                                </t>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">
+                                                    Email <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="email" name="email" class="form-control"
+                                                       placeholder="john@example.com"
+                                                       t-att-value="form_data and form_data.get('email') or ''"
+                                                       required="required"/>
+                                                <t t-if="error and error.get('email')">
+                                                    <small class="text-danger d-block mt-1">
+                                                        <t t-out="error['email']"/>
+                                                    </small>
+                                                </t>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Phone</label>
+                                                <input type="tel" name="phone" class="form-control"
+                                                       placeholder="+91 9876543210"
+                                                       t-att-value="form_data and form_data.get('phone') or ''"/>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    <!-- Hostel &amp; Room Selection -->
+                                    <fieldset class="mb-4">
+                                        <legend class="text-uppercase fw-bold text-muted mb-3">
+                                            <i class="fa fa-door-open me-2"/>Select Hostel &amp; Room
+                                        </legend>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label fw-semibold">
+                                                    Hostel <span class="text-danger">*</span>
+                                                </label>
+                                                <select name="hostel_id" id="hostel_id" class="form-select"
+                                                        required="required">
+                                                    <option value="">-- Select Hostel --</option>
+                                                    <t t-foreach="hostels" t-as="h">
+                                                        <option t-att-value="h.id"
+                                                                t-att-selected="form_data and str(form_data.get('hostel_id','')) == str(h.id)">
+                                                            <t t-out="h.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                                <t t-if="error and error.get('hostel_id')">
+                                                    <small class="text-danger d-block mt-1">
+                                                        <t t-out="error['hostel_id']"/>
+                                                    </small>
+                                                </t>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label fw-semibold">
+                                                    Room <span class="text-danger">*</span>
+                                                </label>
+                                                <select name="room_id" id="room_id" class="form-select"
+                                                        required="required">
+                                                    <option value="">-- Select Hostel First --</option>
+                                                </select>
+                                                <t t-if="error and error.get('room_id')">
+                                                    <small class="text-danger d-block mt-1">
+                                                        <t t-out="error['room_id']"/>
+                                                    </small>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    <!-- Meal Plan -->
+                                    <fieldset class="mb-4">
+                                        <legend class="text-uppercase fw-bold text-muted mb-3">
+                                            <i class="fa fa-utensils me-2"/>Meal Plan (Optional)
+                                        </legend>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <select name="mess_id" id="mess_id" class="form-select">
+                                                    <option value="">-- No Meal Plan --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    <!-- Dates -->
+                                    <fieldset class="mb-4">
+                                        <legend class="text-uppercase fw-bold text-muted mb-3">
+                                            <i class="fa fa-calendar me-2"/>Stay Dates
+                                        </legend>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">
+                                                    Check-in Date <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="date" name="check_in_date" class="form-control"
+                                                       t-att-value="form_data and form_data.get('check_in_date') or ''"
+                                                       required="required"/>
+                                                <t t-if="error and error.get('check_in_date')">
+                                                    <small class="text-danger d-block mt-1">
+                                                        <t t-out="error['check_in_date']"/>
+                                                    </small>
+                                                </t>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">
+                                                    Check-out Date <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="date" name="check_out_date" class="form-control"
+                                                       t-att-value="form_data and form_data.get('check_out_date') or ''"
+                                                       required="required"/>
+                                                <t t-if="error and error.get('check_out_date')">
+                                                    <small class="text-danger d-block mt-1">
+                                                        <t t-out="error['check_out_date']"/>
+                                                    </small>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    <!-- Submit Button -->
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fa fa-paper-plane me-2"/>Submit Booking Request
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Dropdowns JavaScript -->
+            <script type="text/javascript">
+            (function() {
+                'use strict';
+                
+                var hostelSelect = document.getElementById('hostel_id');
+                var roomSelect = document.getElementById('room_id');
+                var messSelect = document.getElementById('mess_id');
+
+                function fetchJSON(url, data, callback) {
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: data}),
+                    })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) { callback(data.result || []); })
+                    .catch(function() { callback([]); });
+                }
+
+                hostelSelect.addEventListener('change', function() {
+                    var hostelId = this.value;
+                    roomSelect.innerHTML = '&lt;option value=""&gt;-- Loading... --&lt;/option&gt;';
+                    messSelect.innerHTML = '&lt;option value=""&gt;-- No Meal Plan --&lt;/option&gt;';
+
+                    if (!hostelId) {
+                        roomSelect.innerHTML = '&lt;option value=""&gt;-- Select Hostel First --&lt;/option&gt;';
+                        return;
+                    }
+
+                    // Load rooms
+                    fetchJSON('/hostel/booking/get_rooms', {hostel_id: parseInt(hostelId)}, function(rooms) {
+                        roomSelect.innerHTML = '&lt;option value=""&gt;-- Select Room --&lt;/option&gt;';
+                        if (rooms.length === 0) {
+                            roomSelect.innerHTML = '&lt;option value=""&gt;No available rooms&lt;/option&gt;';
+                        } else {
+                            rooms.forEach(function(r) {
+                                var opt = document.createElement('option');
+                                opt.value = r.id;
+                                opt.textContent = r.name + ' (Floor ' + r.floor + ' | ' + r.available_beds + ' beds)';
+                                roomSelect.appendChild(opt);
+                            });
+                        }
+                    });
+
+                    // Load mess plans
+                    fetchJSON('/hostel/booking/get_mess_plans', {hostel_id: parseInt(hostelId)}, function(plans) {
+                        messSelect.innerHTML = '&lt;option value=""&gt;-- No Meal Plan --&lt;/option&gt;';
+                        plans.forEach(function(p) {
+                            var opt = document.createElement('option');
+                            opt.value = p.id;
+                            opt.textContent = p.name + ' (' + p.meal_type + ' / ' + p.plan_type + ' - ₹' + p.price + ')';
+                            messSelect.appendChild(opt);
+                        });
+                    });
+                });
+            })();
+            </script>
+        </t>
+    </template>
+
+    <!-- ============================================================
+         Booking Success Page
+    ============================================================ -->
+    <template id="website_booking_success" name="Booking Success">
+        <t t-call="website.layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-7">
+                        <div class="card border-0 shadow-lg">
+                            <div class="card-body p-5 text-center">
+                                <div class="mb-4">
+                                    <i class="fa fa-check-circle text-success" style="font-size: 4rem;"/>
+                                </div>
+                                <h2 class="fw-bold text-success mb-3">Booking Submitted Successfully!</h2>
+                                <p class="text-muted mb-4">
+                                    Thank you, <strong><t t-out="tenant.name"/></strong>. Your booking request has been received and is awaiting admin approval. A confirmation email has been sent to <strong><t t-out="tenant.email"/></strong>.
+                                </p>
+
+                                <div class="card bg-light border-0">
+                                    <div class="card-body text-start">
+                                        <h6 class="fw-bold mb-3">Booking Details:</h6>
+                                        <table class="table table-sm table-borderless">
+                                            <tr>
+                                                <td class="text-muted fw-semibold">Booking ID:</td>
+                                                <td><strong><t t-out="tenant.tenant_id"/></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted fw-semibold">Hostel:</td>
+                                                <td><t t-out="tenant.hostel_id.name"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted fw-semibold">Room:</td>
+                                                <td><t t-out="tenant.room_id.name"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted fw-semibold">Bed:</td>
+                                                <td><t t-out="tenant.bed_id.name"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted fw-semibold">Check-in:</td>
+                                                <td><t t-out="tenant.check_in_date"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted fw-semibold">Check-out:</td>
+                                                <td><t t-out="tenant.check_out_date"/></td>
+                                            </tr>
+                                            <t t-if="tenant.mess_id">
+                                                <tr>
+                                                    <td class="text-muted fw-semibold">Meal Plan:</td>
+                                                    <td><t t-out="tenant.mess_id.name"/></td>
+                                                </tr>
+                                            </t>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <a href="/hostel/booking" class="btn btn-primary">
+                                        <i class="fa fa-plus me-2"/>Make Another Booking
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    </data>
+</odoo>

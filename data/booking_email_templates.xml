@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Booking Confirmation Email (sent on website submission) -->
+    <record id="mail_template_booking_confirmation" model="mail.template">
+        <field name="name">Hostel Booking Confirmation</field>
+        <field name="model_id" ref="model_hostel_tenant"/>
+        <field name="subject">Booking Request Received - {{ object.tenant_id or object.name }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or 'noreply@example.com') }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+                <h2 style="color: #4a4a9c;">Booking Request Received</h2>
+                <p>Dear <t t-out="object.name or 'Guest'"/>,</p>
+                <p>We have received your hostel booking request. It is currently <strong>pending admin approval</strong>. You will be notified once it is reviewed.</p>
+                <table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 8px; font-weight: bold;">Booking ID</td>
+                        <td style="padding: 8px;"><t t-out="object.tenant_id"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; font-weight: bold;">Hostel</td>
+                        <td style="padding: 8px;"><t t-out="object.hostel_id.name or ''"/></td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 8px; font-weight: bold;">Room</td>
+                        <td style="padding: 8px;"><t t-out="object.room_id.name or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; font-weight: bold;">Bed</td>
+                        <td style="padding: 8px;"><t t-out="object.bed_id.name or ''"/></td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 8px; font-weight: bold;">Check-in</td>
+                        <td style="padding: 8px;"><t t-out="object.check_in_date or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; font-weight: bold;">Check-out</td>
+                        <td style="padding: 8px;"><t t-out="object.check_out_date or ''"/></td>
+                    </tr>
+                </table>
+                <p>If you did not make this booking, please ignore this email.</p>
+                <p>Regards,<br/><strong>Hostel Administration</strong></p>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Booking Approved Email -->
+    <record id="mail_template_booking_approved" model="mail.template">
+        <field name="name">Hostel Booking Approved</field>
+        <field name="model_id" ref="model_hostel_tenant"/>
+        <field name="subject">Your Hostel Booking is Approved! - {{ object.tenant_id }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or 'noreply@example.com') }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+                <h2 style="color: #28a745;">✅ Booking Approved</h2>
+                <p>Dear <t t-out="object.name or 'Guest'"/>,</p>
+                <p>Great news! Your hostel booking has been <strong style="color: #28a745;">approved</strong>.</p>
+                <table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 8px; font-weight: bold;">Booking ID</td>
+                        <td style="padding: 8px;"><t t-out="object.tenant_id"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; font-weight: bold;">Hostel</td>
+                        <td style="padding: 8px;"><t t-out="object.hostel_id.name or ''"/></td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 8px; font-weight: bold;">Room</td>
+                        <td style="padding: 8px;"><t t-out="object.room_id.name or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; font-weight: bold;">Bed</td>
+                        <td style="padding: 8px;"><t t-out="object.bed_id.name or ''"/></td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 8px; font-weight: bold;">Check-in Date</td>
+                        <td style="padding: 8px;"><t t-out="object.check_in_date or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; font-weight: bold;">Check-out Date</td>
+                        <td style="padding: 8px;"><t t-out="object.check_out_date or ''"/></td>
+                    </tr>
+                </table>
+                <p>Please arrive on your check-in date and present this booking ID at the reception.</p>
+                <p>Regards,<br/><strong>Hostel Administration</strong></p>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Booking Rejected Email -->
+    <record id="mail_template_booking_rejected" model="mail.template">
+        <field name="name">Hostel Booking Rejected</field>
+        <field name="model_id" ref="model_hostel_tenant"/>
+        <field name="subject">Hostel Booking Update - {{ object.tenant_id }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or 'noreply@example.com') }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+                <h2 style="color: #dc3545;">Booking Not Approved</h2>
+                <p>Dear <t t-out="object.name or 'Guest'"/>,</p>
+                <p>We regret to inform you that your hostel booking request (<strong><t t-out="object.tenant_id"/></strong>) could not be approved at this time.</p>
+                <p>This could be due to unavailability or other administrative reasons. Please visit our booking page to try again or contact us for assistance.</p>
+                <p>Regards,<br/><strong>Hostel Administration</strong></p>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+</odoo>

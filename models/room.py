@@ -20,6 +20,11 @@ class HostelRoom(models.Model):
         ('available','Available'),
         ('full','Full')
     ], compute='_compute_status', store=True)
+    website_visible = fields.Boolean(
+        string='Visible on Website', default=True,
+        help='If enabled, this room will appear in the online booking page.',
+    )
+    image = fields.Image(string='Room Image', max_width=1024, max_height=1024)
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -8,14 +8,12 @@
             <list>
                 <field name="name"/>
                 <field name="tenant_id"/>
-                <field name="gender"/>
-                <field name="hostel_id"/>
-                <field name="category_id" optional="show"/>
                 <field name="room_id"/>
                 <field name="bed_id"/>
-                <field name="mess_id" optional="show"/>
                 <field name="check_in_date"/>
                 <field name="check_out_date"/>
+                <field name="booking_status" optional="show"/>
+                <field name="payment_status" optional="show"/>
                 <field name="status"/>
             </list>
         </field>
@@ -28,9 +26,20 @@
         <field name="arch" type="xml">
             <form string="Tenant">
                 <header>
+                    <button name="action_approve_booking" string="Approve Booking" type="object"
+                            class="btn-success"
+                            invisible="booking_status != 'submitted'"/>
+                    <button name="action_reject_booking" string="Reject Booking" type="object"
+                            class="btn-danger"
+                            invisible="booking_status not in ('submitted', 'approved')"/>
                     <button name="action_check_out" string="Check Out" type="object"
-                            class="btn-primary" invisible="status == 'inactive'"/>
-                    <field name="status" widget="statusbar" statusbar_visible="active,inactive"/>
+                            class="btn-primary"
+                            invisible="status == 'inactive' or booking_status not in ('approved', 'draft')"/>
+                    <field name="booking_status" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved,rejected"
+                           invisible="booking_source != 'website'"/>
+                    <field name="status" widget="statusbar" statusbar_visible="active,inactive"
+                           invisible="booking_source == 'website'"/>
                 </header>
                 <sheet>
                     <!-- Smart Buttons -->
@@ -89,6 +98,14 @@
                                    widget="many2many_tags"
                                    readonly="1"
                                    invisible="not hostel_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <!-- Booking Info -->
+                        <group string="Booking Info">
+                            <field name="booking_source"/>
+                            <field name="booking_status"/>
+                            <field name="payment_status"/>
                         </group>
                     </group>
                 </sheet>
@@ -152,12 +169,15 @@
                 <filter string="Female" name="filter_female" domain="[('gender', '=', 'female')]"/>
                 <separator/>
                 <filter string="With Mess Plan" name="filter_mess" domain="[('mess_id', '!=', False)]"/>
+                <filter string="Website Bookings" name="filter_website" domain="[('booking_source', '=', 'website')]"/>
+                <filter string="Pending Approval" name="filter_submitted" domain="[('booking_status', '=', 'submitted')]"/>
                 <group expand="0" string="Group By">
                     <filter string="Hostel" name="group_hostel" context="{'group_by': 'hostel_id'}"/>
                     <filter string="Category" name="group_category" context="{'group_by': 'category_id'}"/>
                     <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
                     <filter string="Gender" name="group_gender" context="{'group_by': 'gender'}"/>
                     <filter string="Mess Plan" name="group_mess" context="{'group_by': 'mess_id'}"/>
+                    <filter string="Booking Status" name="group_booking" context="{'group_by': 'booking_status'}"/>
                 </group>
             </search>
         </field>
@@ -169,5 +189,21 @@
         <field name="res_model">hostel.tenant</field>
         <field name="view_mode">list,form,kanban</field>
         <field name="search_view_id" ref="view_tenant_search"/>
-    </record>   
+    </record>
+
+    <!-- Website Bookings Action -->
+    <record id="action_hostel_website_bookings" model="ir.actions.act_window">
+        <field name="name">Website Bookings</field>
+        <field name="res_model">hostel.tenant</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('booking_source', '=', 'website')]</field>
+        <field name="context">{'default_booking_source': 'website'}</field>
+        <field name="search_view_id" ref="view_tenant_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No website bookings yet.
+            </p>
+            <p>Bookings submitted via the website will appear here for review.</p>
+        </field>
+    </record>
 </odoo>

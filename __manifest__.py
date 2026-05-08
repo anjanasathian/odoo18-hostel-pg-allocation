@@ -14,11 +14,12 @@
         * Generate invoices for tenants
     """,
     'author': 'Anjana Sathian',
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'mail', 'website'],
     'data': [
         'data/sequence.xml',
         'data/dashboard_data.xml',
         'data/tenant_email_template.xml',
+        'data/booking_email_templates.xml',
         'security/security.xml',
         'security/ir.model.access.csv',
         'report/hostel_invoice_template.xml',
@@ -32,6 +33,7 @@
         'views/bed_views.xml',
         'views/tenant_views.xml',
         'views/invoice_views.xml',
+        'views/website_booking.xml',
         'views/menu_views.xml',
     ],
     'assets': {

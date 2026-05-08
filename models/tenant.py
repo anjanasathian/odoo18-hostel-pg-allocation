@@ -70,6 +70,21 @@ class HoselTenant(models.Model):
     ], default='active', tracking=True)
     invoice_id = fields.Many2one('hostel.invoice', string='Invoice')
     invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
+    booking_source = fields.Selection([
+        ('direct', 'Direct'),
+        ('website', 'Website'),
+    ], string='Booking Source', default='direct', tracking=True)
+    booking_status = fields.Selection([
+        ('draft', 'Draft'),
+        ('submitted', 'Submitted'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ], string='Booking Status', default='draft', tracking=True)
+    payment_status = fields.Selection([
+        ('not_paid', 'Not Paid'),
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+    ], string='Payment Status', default='not_paid', tracking=True)
 
     # -------------------------------------------------------------------------
     # Compute Methods
@@ -201,6 +216,45 @@ class HoselTenant(models.Model):
                 'bed_id': False,
             })
         return True
+
+    def action_approve_booking(self):
+        """Approve a website booking: mark bed occupied, set status active."""
+        for record in self:
+            if record.booking_status != 'submitted':
+                continue
+            if record.bed_id and record.bed_id.status == 'available':
+                record.bed_id.write({'tenant_id': record.id, 'status': 'occupied'})
+            record.write({'booking_status': 'approved', 'status': 'active'})
+            record.message_post(body=_('Booking approved by %s.') % self.env.user.name)
+            # Send approval email
+            template = self.env.ref(
+                'hostel_allocation.mail_template_booking_approved',
+                raise_if_not_found=False,
+            )
+            if template and record.email:
+                template.sudo().send_mail(record.id, force_send=True)
+
+    def action_reject_booking(self):
+        """Reject a website booking: bed remains available."""
+        for record in self:
+            if record.booking_status not in ('submitted', 'approved'):
+                continue
+            # Free bed if it was already occupied
+            if record.bed_id and record.bed_id.tenant_id == record:
+                record.bed_id.write({'tenant_id': False, 'status': 'available'})
+            record.write({
+                'booking_status': 'rejected',
+                'status': 'inactive',
+                'bed_id': False,
+            })
+            record.message_post(body=_('Booking rejected by %s.') % self.env.user.name)
+            # Send rejection email
+            template = self.env.ref(
+                'hostel_allocation.mail_template_booking_rejected',
+                raise_if_not_found=False,
+            )
+            if template and record.email:
+                template.sudo().send_mail(record.id, force_send=True)
 
     def action_view_invoice(self):
         self.ensure_one()

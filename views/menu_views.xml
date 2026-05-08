@@ -37,7 +37,14 @@
         name="Rooms"
         parent="menu_hostel"
         action="action_hostel_room"
-        sequence="2"/> 
+        sequence="2"/>
+
+    <menuitem
+        id="menu_hostel_website_bookings"
+        name="Website Bookings"
+        parent="menu_hostel"
+        action="action_hostel_website_bookings"
+        sequence="3"/> 
  
     <!-- ROOM MENU -->   
     <menuitem
